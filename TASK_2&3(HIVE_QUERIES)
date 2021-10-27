@@ -1,0 +1,23 @@
+--Creating and empty table to store the values of the dataset merged on Python and cleaned on PIG.
+CREATE EXTERNAL TABLE IF NOT EXISTS  posts(Id int, Score int, Body String, OwnerUserId Int, Title String, Tags String) ROW FORMAT DELIMITED FIELDS TERMINATED BY  ',' STORED AS TEXTFILE  LOCATION '/user/hiveposts';
+
+SHOW tables;
+
+DESCRIBE posts;
+
+SET hive.cli.print.header=true;
+
+LOAD DATA INPATH  '/mydata/CA675_1.csv' OVERWRITE INTO TABLE posts;
+
+SELECT * FROM posts LIMIT 5;
+
+---Task2.2.1: Select Top 10 posts by score.
+SELECT Id,Tags,Body,Title,Score FROM posts ORDER BY Score DESC  LIMIT 10;
+
+---Task2.2.2: Select Top 10 users by post score
+SELECT OwnerUserId, SUM(Score) AS TotalScore FROM posts GROUP BY OwnerUserId ORDER BY TotalScore DESC LIMIT 10;
+
+---Task 2.2.3: Select number of distinct users, who used the word “Cloud” in one of their posts
+Select COUNT(DISTINCT OwnerUserId) FROM posts where (Body LIKE '%Cloud%' OR Title LIKE '%Cloud%' OR Tags LIKE '%Cloud%');
+
+Select COUNT(DISTINCT OwnerUserId) FROM posts where (Body LIKE '%cloud%' OR Title LIKE '%cloud%' OR Tags LIKE '%cloud%');
